@@ -8,7 +8,31 @@ class Cell {
 	 * 
 	 */
 	enum Type {
-		EMPTY, RED, BLUE,
+		/**
+		 * 
+		 */
+		EMPTY(-1), RED(0), BLUE(1);
+
+		/**
+		 * 
+		 */
+		private int id = -1;
+
+		/**
+		 * 
+		 * @param id
+		 */
+		private Type(int id) {
+			this.id = id;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public int getId() {
+			return id;
+		}
 	}
 
 	/**
@@ -55,5 +79,35 @@ class Cell {
 	 */
 	public void setScore(int score) {
 		this.score = score;
+	}
+
+	/**
+	 * 
+	 */
+	public void rise() {
+		score++;
+	}
+
+	/**
+	 * 
+	 * @param amount
+	 */
+	public void drop(int amount) {
+		/*
+		 * Negative numbers are illegal.
+		 */
+		if(amount < 0) {
+			amount = 0;
+		}
+		
+		score -= amount;
+		
+		/*
+		 * Switch to empty cell.
+		 */
+		if(score < 1) {
+			score = 0;
+			type = Type.EMPTY;
+		}
 	}
 }

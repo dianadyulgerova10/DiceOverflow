@@ -3,13 +3,58 @@ package eu.veldsoft.dice.overflow;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class GameActivity extends Activity {
+	/**
+	 * 
+	 */
+	private final Handler handler = new Handler();
+
+	/**
+	 * 
+	 */
+	private Runnable ai = new Runnable() {
+		@Override
+		public void run() {
+			if (board.isGameOver() == true) {
+				return;
+			}
+
+			if (board.getTurn() % 2 != 1) {
+				return;
+			}
+
+			/*
+			 * Select random valid cell.
+			 */
+			int x = -1;
+			int y = -1;
+			Cell cells[][] = board.getCells();
+			do {
+				// TODO Check for player's color available on the board.
+				x = Util.PRNG.nextInt(cells.length);
+				y = Util.PRNG.nextInt(cells[x].length);
+			} while (board.getTurn() % 2 != cells[x][y].getType().getId());
+
+			boolean result = board.click(x, y);
+			if (result == true) {
+				if (board.hasWinner() == true) {
+					board.setGameOver();
+				}
+
+				board.next();
+			}
+
+			updateViews();
+		}
+	};
 
 	/**
 	 * The game has a board.
@@ -28,13 +73,31 @@ public class GameActivity extends Activity {
 	private View.OnClickListener click = new View.OnClickListener() {
 		@Override
 		public void onClick(View view) {
+			if (board.isGameOver() == true) {
+				return;
+			}
+
+			if (board.getTurn() % 2 != 0) {
+				return;
+			}
+
+			boolean result = false;
 			loops: for (int i = 0; i < images.length; i++) {
 				for (int j = 0; j < images[i].length; j++) {
 					if (images[i][j] == view) {
-						board.click(i, j);
+						result = board.click(i, j);
 						break loops;
 					}
 				}
+			}
+
+			if (result == true) {
+				if (board.hasWinner() == true) {
+					board.setGameOver();
+				}
+
+				board.next();
+				handler.postDelayed(ai, 500);
 			}
 
 			updateViews();
@@ -104,6 +167,10 @@ public class GameActivity extends Activity {
 					break;
 				}
 			}
+		}
+
+		if (board.isGameOver() == true) {
+			Toast.makeText(this, getResources().getString(R.string.game_over_message), Toast.LENGTH_LONG).show();
 		}
 	}
 
