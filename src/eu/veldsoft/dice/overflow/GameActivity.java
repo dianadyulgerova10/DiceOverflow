@@ -94,10 +94,10 @@ public class GameActivity extends Activity {
 			if (result == true) {
 				if (board.hasWinner() == true) {
 					board.setGameOver();
+				} else {
+					board.next();
+					handler.postDelayed(ai, 500);
 				}
-
-				board.next();
-				handler.postDelayed(ai, 500);
 			}
 
 			updateViews();

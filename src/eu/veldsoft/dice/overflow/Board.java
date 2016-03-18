@@ -52,7 +52,7 @@ class Board {
 		if (x < 0 || y < 0 || x >= cells.length || y >= cells[x].length) {
 			return;
 		}
-		
+
 		cells[x][y].rise();
 		cells[x][y].setType(type);
 	}
@@ -194,8 +194,12 @@ class Board {
 		Cell.Type found = null;
 
 		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; i < cells[j].length; j++) {
-				if (found == null && cells[i][j].getType() != Cell.Type.EMPTY) {
+			for (int j = 0; j < cells[i].length; j++) {
+				if (cells[i][j].getType() == Cell.Type.EMPTY) {
+					continue;
+				}
+
+				if (found == null) {
 					found = cells[i][j].getType();
 				} else if (cells[i][j].getType() != found) {
 					return false;
