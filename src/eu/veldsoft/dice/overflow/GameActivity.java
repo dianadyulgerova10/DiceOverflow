@@ -38,29 +38,39 @@ public class GameActivity extends Activity {
 	 * 
 	 */
 	private Runnable ai = new Runnable() {
+		/**
+		 * 
+		 */
+		private ArtificialIntelligence bot = new RandomArtificialIntelligence();
+
+		/**
+		 * 
+		 */
 		@Override
 		public void run() {
+			/*
+			 * If the game is over there is no need to play.
+			 */
 			if (board.isGameOver() == true) {
 				return;
 			}
 
+			/*
+			 * Valid turn check.
+			 */
 			if (board.getTurn() % 2 != 1) {
 				return;
 			}
 
 			/*
-			 * Select random valid cell.
+			 * Generate move.
 			 */
-			int x = -1;
-			int y = -1;
-			Cell cells[][] = board.getCells();
-			do {
-				// TODO Check for player's color available on the board.
-				x = Util.PRNG.nextInt(cells.length);
-				y = Util.PRNG.nextInt(cells[x].length);
-			} while (board.getTurn() % 2 != cells[x][y].getType().getId());
+			int move[] = bot.move(board.getCells(), Cell.Type.id(board.getTurn() % 2));
 
-			boolean result = board.click(x, y);
+			/*
+			 * Play move.
+			 */
+			boolean result = board.click(move[0], move[1]);
 			if (result == true) {
 				if (board.hasWinner() == true) {
 					board.setGameOver();

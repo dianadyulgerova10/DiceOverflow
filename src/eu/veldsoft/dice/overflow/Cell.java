@@ -15,6 +15,21 @@ class Cell {
 
 		/**
 		 * 
+		 * @param id
+		 * @return
+		 */
+		static Type id(int id) {
+			for (Type type : Type.values()) {
+				if (type.getId() == id) {
+					return type;
+				}
+			}
+
+			return EMPTY;
+		}
+
+		/**
+		 * 
 		 */
 		private int id = -1;
 
@@ -96,16 +111,16 @@ class Cell {
 		/*
 		 * Negative numbers are illegal.
 		 */
-		if(amount < 0) {
+		if (amount < 0) {
 			amount = 0;
 		}
-		
+
 		score -= amount;
-		
+
 		/*
 		 * Switch to empty cell.
 		 */
-		if(score < 1) {
+		if (score < 1) {
 			score = 0;
 			type = Type.EMPTY;
 		}
