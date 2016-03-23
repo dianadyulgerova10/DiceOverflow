@@ -2,6 +2,8 @@ package eu.veldsoft.dice.overflow;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
@@ -16,6 +18,21 @@ public class GameActivity extends Activity {
 	 * 
 	 */
 	private final Handler handler = new Handler();
+
+	/**
+	 * 
+	 */
+	private SoundPool sounds = null;
+
+	/**
+	 * 
+	 */
+	private int clickId = -1;
+
+	/**
+	 * 
+	 */
+	private int finishId = -1;
 
 	/**
 	 * 
@@ -95,6 +112,7 @@ public class GameActivity extends Activity {
 				if (board.hasWinner() == true) {
 					board.setGameOver();
 				} else {
+					sounds.play(clickId, 0.99f, 0.99f, 0, 0, 1);
 					board.next();
 					handler.postDelayed(ai, 500);
 				}
@@ -108,6 +126,10 @@ public class GameActivity extends Activity {
 	 * 
 	 */
 	private void updateViews() {
+		if (board.isGameOver() == true) {
+			sounds.play(finishId, 0.99f, 0.99f, 0, 0, 1);
+		}
+
 		Cell cells[][] = board.getCells();
 		for (int i = 0; i < cells.length && i < images.length; i++) {
 			for (int j = 0; j < cells[i].length && j < images[i].length; j++) {
@@ -179,6 +201,10 @@ public class GameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game);
 
+		sounds = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+		clickId = sounds.load(this, R.raw.schademans_pipe9, 1);
+		finishId = sounds.load(this, R.raw.game_sound_correct, 1);
+
 		images[0][0] = (ImageView) findViewById(R.id.cell00);
 		images[0][1] = (ImageView) findViewById(R.id.cell01);
 		images[0][2] = (ImageView) findViewById(R.id.cell02);
@@ -214,6 +240,20 @@ public class GameActivity extends Activity {
 		updateViews();
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		sounds.release();
+		sounds = null;
+	}
+
+	/**
+	 * 
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -221,6 +261,9 @@ public class GameActivity extends Activity {
 		return super.onCreateOptionsMenu(menu);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
